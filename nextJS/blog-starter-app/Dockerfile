@@ -1,28 +1,19 @@
-FROM node:18-alpine as builder
-RUN npm install -g pnpm
-WORKDIR /app        
+FROM node:lts as builder
+WORKDIR /my-project
 COPY . .
-
-RUN if [ -f "./package-lock.json" ]; then npm install; \
-    elif [ -f "./yarn.lock" ]; then yarn; \           
-    elif [ -f "./pnpm-lock.yaml" ]; then pnpm install;fi
-
+RUN npm install
 COPY . .
-
 RUN npm run build
 
-FROM nginxinc/nginx-unprivileged:stable-alpine-slim
-
-ENV ENABLE_PERMISSIONS=TRUE
-ENV DEBUG_PERMISSIONS=TRUE
-ENV USER_NGINX=10015
-ENV GROUP_NGINX=10015
-
-COPY --from=builder /app/out /usr/share/nginx/html/
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-USER 10015
+FROM node:lts as runner
+WORKDIR /my-project
+ENV NODE_ENV production
+# If you are using a custom next.config.js file, uncomment this line.
+# COPY --from=builder /my-project/next.config.js ./
+COPY --from=builder /my-project/public ./public
+COPY --from=builder /my-project/.next ./.next
+COPY --from=builder /my-project/node_modules ./node_modules
+COPY --from=builder /my-project/package.json ./package.json
 
 EXPOSE 8080
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]
