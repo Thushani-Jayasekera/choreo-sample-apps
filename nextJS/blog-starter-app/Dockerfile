@@ -30,6 +30,8 @@ RUN npm run build
 
 RUN chown -R 10500:10500 "/usr/src/app"
 
-EXPOSE 3000
+USER 10500
+
+EXPOSE 8080
 
 CMD [ "npm", "start" ]
