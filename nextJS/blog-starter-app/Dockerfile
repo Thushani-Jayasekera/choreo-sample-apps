@@ -15,5 +15,7 @@ COPY --from=builder /my-project/.next ./.next
 COPY --from=builder /my-project/node_modules ./node_modules
 COPY --from=builder /my-project/package.json ./package.json
 
+USER 10015
+
 EXPOSE 8080
 CMD ["npm", "start"]
