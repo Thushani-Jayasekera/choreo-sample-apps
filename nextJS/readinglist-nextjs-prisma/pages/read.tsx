@@ -51,11 +51,12 @@ const Drafts: React.FC<Props> = (props) => {
         <h1>My Reads</h1>
         <main>
           {props.reads.length === 0 && <p>No books added read yet.</p>}
-          {props.reads.map((book) => (
+          {props.reads.length && (props.reads.map((book) => (
             <div key={book.id} className="book">
               <Book book={book} />
             </div>
-          ))}
+          )))
+          }
         </main>
       </div>
     </Layout>
