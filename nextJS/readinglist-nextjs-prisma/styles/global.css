@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  background: rgb(238 242 255);
+}
+
+input,
+textarea {
+  font-size: 16px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.layout {
+  padding: 0 2rem;
+}
+.page {
+  background: var(--geist-background);
+  padding: 3rem;
+  display: block;
+  justify-content: left;
+  align-items: left;
+}
+main {
+  display: block;
+  background-color: #f0f0f0;
+  padding: 20px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 0.25rem;
+  border: 0.125rem solid rgba(0, 0, 0, 0.2);
+  font-size: 18px;
+  color: rgb(129 140 248);
+  border-bottom: rgb(129 140 248);
+}
+
+input[type="submit"] {
+  background: rgb(79 70 229);
+  border: 0;
+  padding: 1rem 2rem;
+  border-radius: 1.25rem;
+  color: #ececec;
+}
+
+.back {
+  margin-left: 1rem;
+}
+.select {
+  width: 100%;
+  height: 40px;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 0.25rem;
+  border: 0.125rem solid rgba(0, 0, 0, 0.2);
+  font-size: 18px;
+  color: rgb(129 140 248);
+}
+
+.book {
+  width: 100%;
+  transition: box-shadow 0.1s ease-in;
+  background-color: rgb(249 250 251)
+}
+
+.book:hover {
+  box-shadow: 1px 1px 3px #aaa;
+}
+
+.book + .book {
+  margin-top: 2rem;
+}
+.actions {
+  margin-top: 2rem;
+}
+
+button {
+  background: #ececec;
+  border: 0;
+  border-radius: 0.125rem;
+  padding: 1rem 2rem;
+  border-color: rgb(129 140 248);
+}
+
+button + button {
+  margin-left: 1rem;
+}
+
+.book-div {
+  color: inherit;
+  padding: 2rem;
+}
+nav {
+  display: flex;
+  padding: 2rem;
+  align-items: center;
+}
+
+a {
+  text-decoration: none;
+  color: var(--geist-foreground);
+  display: inline-block;
+}
+
+p {
+  display: inline-block;
+  font-size: 13px;
+  padding-right: 1rem;
+}
+
+a + a {
+  margin-left: 1rem;
+}
+
+.right {
+  margin-left: auto;
+}
+
+.right a {
+  border: 1px solid var(--geist-foreground);
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+}
+
+.nav-button {
+  border-radius: 1rem;
+  border-width: 1px;
+  background-color: rgb(79 70 229);
+  color: #f0f0f0;
+  padding: 2px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.left a[data-active="true"] {
+  color: gray;
+}
+
+.book-card {
+  flex-direction: column;
+  display: flex;
+  background-color: rgb(249 250 251)
+}
+.book-div {
+  flex: 1;
+  flex-direction: column;
+  background-color: rgb(249 250 251)
+}
+.book-button {
+  flex: 1;
+  flex-direction: row-reverse;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: 0;
+}
