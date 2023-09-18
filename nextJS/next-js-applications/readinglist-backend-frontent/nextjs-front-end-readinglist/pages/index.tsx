@@ -7,12 +7,15 @@ import groupBy from "lodash/groupBy";
 import { Book } from "@/types/book";
 import AddItem from "@/components/add-book";
 import Header from "@/components/header";
+import getConfig from "next/config";
 
 // import { getReadingListInstance } from "@/lib/instance";
 
 export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
 
 const Home = () => {
   const { data: session, status } = useSession();
@@ -29,7 +32,7 @@ const Home = () => {
 
   async function getBooks() {
 try{
-  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL}`, {
+  const response = await fetch(`${publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
