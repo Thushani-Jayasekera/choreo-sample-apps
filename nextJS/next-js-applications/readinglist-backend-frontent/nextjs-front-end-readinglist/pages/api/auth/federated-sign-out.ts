@@ -7,7 +7,7 @@ export default async function federatedSignOut(
   res: NextApiResponse
 ) {
   // Get the site base url.
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://fd9524ea-680d-45af-9efa-7cbd6329585c.e1-us-east-azure.choreoapps.dev";
 
   const router = useRouter();
 
@@ -22,7 +22,7 @@ export default async function federatedSignOut(
     // Asgardeo logout endpoint.
     const endSessionURL = `https://api.asgardeo.io/t/areeb/oidc/logout`;
 
-    const redirectURL = `http://localhost:3000/`;
+    const redirectURL = `https://fd9524ea-680d-45af-9efa-7cbd6329585c.e1-us-east-azure.choreoapps.dev/`;
 
     const endSessionParams = new URLSearchParams({
       id_token_hint: idToken,
