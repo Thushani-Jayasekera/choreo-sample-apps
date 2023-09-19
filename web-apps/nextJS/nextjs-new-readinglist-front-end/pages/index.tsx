@@ -2,7 +2,7 @@ import { useSession, signOut, getSession } from "next-auth/react";
 import { Tab } from "@headlessui/react";
 import { HiArrowUp } from "react-icons/hi";
 import { useEffect, useState } from "react";
-import Router from "next/router";
+import { useRouter } from "next/router"; // Import useRouter from "next/router" instead of importing "Router"
 import { Dictionary } from "lodash";
 import groupBy from "lodash/groupBy";
 import { Book } from "@/types/book";
@@ -19,6 +19,7 @@ const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 const Home = (props: any) => {
   const { data: session, status } = useSession();
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
+  const router = useRouter(); // Use useRouter from "next/router" to access the router object.
 
   if (status === "loading") {
     return <div>Authenticating...</div>;
@@ -29,51 +30,55 @@ const Home = (props: any) => {
   console.log("readingList", props.readingList);
 
   async function deleteBook(id: string): Promise<void> {
-    await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL || publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL}?id=${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    await fetch(
+      `${
+        process.env.NEXT_PUBLIC_SERVICE_URL ||
+        publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL
+      }?id=${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     alert("Book is deleted successfully");
-    Router.push("/");
+    router.push("/");
   }
 
   return (
     <div className="py-3 md:py-6">
-      <div className="container px-4 mx-auto flex justify-center">
-        <div className="w-full max-w-lg px-2 py-16 sm:px-0 mb-20">
+      <div className="container px-4 mx-auto flex justify-left">
+        <div className="w-full px-1 py-16 sm:px-0 mb-20">
           {session?.user ? (
             <>
-              <div className="flex justify-between">
-                <p className="text-4xl text-white mb-3 font-bold">
-                  Reading List
-                </p>
-                <p>Hello {session?.user.email ? session.user.email : ""}</p>
-                <div className="container w-auto">
+              <nav>
+                <div className="flex justify-between">
+                  <p className="text-4xl text-white mb-3 font-bold">
+                    Reading List
+                  </p>
+                  <p className="text-3xl text-white mb-3">
+                    Hello {session?.user.email ? session.user.email : ""}
+                  </p>
+                  <button
+                    className="bg-black bg-opacity-20 p-2 rounded-md text-sm mb-3 font-medium text-white h-10"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      signOut({ callbackUrl: "/" });
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+                <div className="flex justify-between">
                   <button
                     className="float-right bg-black bg-opacity-20 p-2 rounded-md text-sm my-3 font-medium text-white h-10"
                     onClick={() => setIsAddItemOpen(true)}
                   >
                     + Add New
                   </button>
-                  <button
-                    className="float-right bg-black bg-opacity-20 p-2 rounded-md text-sm my-3 font-medium text-white w-10 h-10 mr-1"
-                    onClick={() => Router.push("/")}
-                  >
-                    <HiArrowUp onclick={() => Router.reload()} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      signOut({ callbackUrl: "/" });
-                    }}
-                    style={{ marginTop: "30px", marginBottom: "40px" }}
-                  >
-                    Logout
-                  </button>
                 </div>
-              </div>
+              </nav>
               {props.readingList !== null && (
                 <Tab.Group>
                   <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
@@ -95,8 +100,8 @@ const Home = (props: any) => {
                     ))}
                   </Tab.List>
                   <Tab.Panels className="mt-2">
-                    {Object.values(props.readingList).map(
-                      (books: Book[], idx) => (
+                    {(Object.values(props.readingList) as Book[][]).map(
+                      (books: Book[], idx: number) => (
                         <Tab.Panel key={idx}>
                           <ul>
                             {books.map((book) => (
@@ -109,8 +114,8 @@ const Home = (props: any) => {
                                     {book.title}
                                   </h3>
 
-                                  <ul className="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                                    <li>{book.author}</li>
+                                  <ul className="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-200">
+                                    <i> Written By:</i><li>{book.author}</li>
                                   </ul>
                                 </li>
                                 <button
@@ -144,13 +149,19 @@ const Home = (props: any) => {
 export async function getServerSideProps(context: any) {
   const session = await getSession(context);
   const accessToken = session?.user?.accessToken;
-  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL || publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const grouped = groupBy(await response.json(), "status");
+  const response = await fetch(
+    `${
+      process.env.NEXT_PUBLIC_SERVICE_URL ||
+      publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL
+    }`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  const grouped: Dictionary<Book[]> = groupBy(await response.json(), "status");
   return {
     props: {
       readingList: grouped || null,
