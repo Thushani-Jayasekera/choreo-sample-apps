@@ -8,11 +8,11 @@ export default NextAuth({
     {
       id: "asgardeo",
       name: "Asgardeo",
-      clientId: publicRuntimeConfig.ASGARDEO_CLIENT_ID || process.env.ASGARDEO_CLIENT_ID,
-      clientSecret: publicRuntimeConfig.ASGARDEO_CLIENT_SECRET || process.env.ASGARDEO_CLIENT_SECRET,
+      clientId: publicRuntimeConfig.ASGARDEO_CLIENT_ID,
+      clientSecret: publicRuntimeConfig.ASGARDEO_CLIENT_SECRET,
       type: "oauth",
-      wellKnown: "https://api.asgardeo.io/t/" + (publicRuntimeConfig.ASGARDEO_ORGANIZATION_NAME || process.env.ASGARDEO_ORGANIZATION_NAME)+ "/oauth2/token/.well-known/openid-configuration",
-      authorization: { params: { scope: publicRuntimeConfig.ASGARDEO_SCOPES || process.env.ASGARDEO_SCOPES } },
+      wellKnown: "https://api.asgardeo.io/t/" + (publicRuntimeConfig.ASGARDEO_ORGANIZATION_NAME)+ "/oauth2/token/.well-known/openid-configuration",
+      authorization: { params: { scope: publicRuntimeConfig.ASGARDEO_SCOPES } },
       idToken: true,
       checks: ["pkce", "state"],
       profile(profile) {
@@ -24,7 +24,7 @@ export default NextAuth({
       },
     },
   ],
-  secret: serverRuntimeConfig.SECRET || process.env.SECRET,
+  secret: serverRuntimeConfig.SECRET,
 
   session: {
     strategy: "jwt",

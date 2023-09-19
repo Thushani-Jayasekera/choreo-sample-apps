@@ -165,6 +165,7 @@ export async function getServerSideProps(context: any) {
   return {
     props: {
       readingList: grouped || null,
+      session: await getSession(context),
     },
   };
 }
