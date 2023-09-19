@@ -12,9 +12,6 @@ const Header = (session: any, org: any) => (
       >
         Reading List Application
       </h1>
-      <p>Public {publicRuntimeConfig.ASGARDEO_CLIENT_ID} AND  {publicRuntimeConfig.ASGARDEO_CLIENT_SECRET}</p>
-      <p>Server {serverRuntimeConfig.ASGARDEO_CLIENT_ID} AND  {serverRuntimeConfig.ASGARDEO_CLIENT_SECRET}</p>
-      <p>env {process.env.ASGARDEO_CLIENT_ID} AND  {process.env.ASGARDEO_CLIENT_SECRET}</p>
       <div className={`max-w-xl mx-auto`}>
         <p className={`mt-10 text-gray-900 text-center text-xl lg:text-3xl`}>
           Add books to your reading list
