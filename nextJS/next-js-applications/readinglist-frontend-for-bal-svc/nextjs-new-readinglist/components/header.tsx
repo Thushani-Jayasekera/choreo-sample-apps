@@ -1,3 +1,4 @@
+import { GetServerSideProps } from "next";
 import { getSession, signIn, signOut } from "next-auth/react";
 
 const Header = (session: any, org: any) => (
@@ -6,17 +7,17 @@ const Header = (session: any, org: any) => (
       <h1
         className={`font-sans font-bold text-4xl md:text-5xl lg:text-8xl text-center leading-snug text-gray-800`}
       >
-        Asgardeo-NextJs Sample Application
+        Reading List Application
       </h1>
       <div className={`max-w-xl mx-auto`}>
-        <p className={`mt-10 text-gray-500 text-center text-xl lg:text-3xl`}>
-          Create seamless login experiences in minutes.Try out Asgardeo for free
-          and see how much time you can save
+        <p className={`mt-10 text-gray-900 text-center text-xl lg:text-3xl`}>
+          Add books to your reading list
         </p>
       </div>
       <div className={`mt-10 flex justify-center items-center w-full mx-auto`}>
         {session ? (
           <button
+            className="bg-white bg-opacity-20 p-2 rounded-md text-sm my-3 font-medium text-white h-10"
             onClick={(e) => {
               e.preventDefault();
               signIn("asgardeo", { callbackUrl: "/" });
@@ -37,6 +38,7 @@ const Header = (session: any, org: any) => (
         )}
       </div>
     </div>
+
   </header>
 );
 

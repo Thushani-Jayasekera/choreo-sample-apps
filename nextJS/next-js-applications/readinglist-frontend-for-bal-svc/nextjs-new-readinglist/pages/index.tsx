@@ -1,4 +1,3 @@
-import { GetServerSideProps } from "next";
 import { useSession, signOut, getSession } from "next-auth/react";
 import { Tab } from "@headlessui/react";
 import { HiArrowUp } from "react-icons/hi";
@@ -9,17 +8,16 @@ import groupBy from "lodash/groupBy";
 import { Book } from "@/types/book";
 import AddItem from "@/components/add-book";
 import Header from "@/components/header";
-import { access } from "fs";
+import getConfig from "next/config";
 
 export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-const Home = () => {
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
+
+const Home = (props: any) => {
   const { data: session, status } = useSession();
-  const [readingList, setReadingList] = useState<Dictionary<Book[]> | null>(
-    null
-  );
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
 
   if (status === "loading") {
@@ -28,23 +26,10 @@ const Home = () => {
 
   const accessToken = session?.user?.accessToken;
 
-  async function getBooks() {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    if (response.ok) {
-      const grouped = groupBy(await response.json(), "status");
-      setReadingList(grouped);
-      Router.push("/");
-    } else {
-      alert(`Something went wrong!"`);
-    }
-  }
+  console.log("readingList", props.readingList);
+
   async function deleteBook(id: string): Promise<void> {
-    await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL}?id=${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL || publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL}?id=${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -53,12 +38,6 @@ const Home = () => {
     alert("Book is deleted successfully");
     Router.push("/");
   }
-
-  useEffect(() => {
-    if (accessToken) {
-      getBooks();
-    }
-  }, [accessToken]);
 
   return (
     <div className="py-3 md:py-6">
@@ -95,10 +74,10 @@ const Home = () => {
                   </button>
                 </div>
               </div>
-              {readingList && (
+              {props.readingList !== null && (
                 <Tab.Group>
                   <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-                    {Object.keys(readingList).map((val) => (
+                    {Object.keys(props.readingList).map((val) => (
                       <Tab
                         key={val}
                         className={({ selected }) =>
@@ -116,32 +95,36 @@ const Home = () => {
                     ))}
                   </Tab.List>
                   <Tab.Panels className="mt-2">
-                    {Object.values(readingList).map((books: Book[], idx) => (
-                      <Tab.Panel key={idx}>
-                        <ul>
-                          {books.map((book) => (
-                            <div className="flex justify-between" key={book.id}>
-                              <li className="relative rounded-md p-3">
-                                <h3 className="text-sm font-medium leading-5">
-                                  {book.title}
-                                </h3>
-
-                                <ul className="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                                  <li>{book.author}</li>
-                                  <li>&middot;</li>
-                                </ul>
-                              </li>
-                              <button
-                                className="float-right bg-red-500 text-white rounded-md self-center text-xs p-2 mr-2"
-                                onClick={() => deleteBook(book.id || "")}
+                    {Object.values(props.readingList).map(
+                      (books: Book[], idx) => (
+                        <Tab.Panel key={idx}>
+                          <ul>
+                            {books.map((book) => (
+                              <div
+                                className="flex justify-between"
+                                key={book.id}
                               >
-                                Delete
-                              </button>
-                            </div>
-                          ))}
-                        </ul>
-                      </Tab.Panel>
-                    ))}
+                                <li className="relative rounded-md p-3">
+                                  <h3 className="text-sm font-medium leading-5">
+                                    {book.title}
+                                  </h3>
+
+                                  <ul className="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
+                                    <li>{book.author}</li>
+                                  </ul>
+                                </li>
+                                <button
+                                  className="float-right bg-red-500 text-white rounded-md self-center text-xs p-2 mr-2"
+                                  onClick={() => deleteBook(book.id || "")}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            ))}
+                          </ul>
+                        </Tab.Panel>
+                      )
+                    )}
                   </Tab.Panels>
                 </Tab.Group>
               )}
@@ -159,9 +142,18 @@ const Home = () => {
 };
 
 export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+  const accessToken = session?.user?.accessToken;
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL || publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const grouped = groupBy(await response.json(), "status");
   return {
     props: {
-      session: await getSession(context),
+      readingList: grouped || null,
     },
   };
 }
