@@ -1,40 +1,32 @@
-# --------------------------------------------------------------------
-# Copyright (c) 2023, WSO2 Inc. (http://wso2.com) All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# -----------------------------------------------------------------------
+FROM node:18
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+# RUN apk add --no-cache libc6-compat
+WORKDIR /app
 
-FROM node:18-alpine as builder
-RUN npm install -g pnpm
-WORKDIR /app        
-COPY . .
-
-ENV npm_config_cache=/app
-
-RUN if [ -f "./package-lock.json" ]; then npm install; \
-    elif [ -f "./yarn.lock" ]; then yarn; \           
-    elif [ -f "./pnpm-lock.yaml" ]; then pnpm install;fi
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
+RUN npm ci
 
 COPY . .
 
-# RUN npx eslint src
-RUN npx prisma generate
+# Next.js collects completely anonymous telemetry data about general usage.
+# Learn more here: https://nextjs.org/telemetry
+# Uncomment the following line in case you want to disable telemetry during the build.
+ENV NEXT_TELEMETRY_DISABLED 1
+
 RUN npm run build
 
-RUN chown -R 10500:10500 "/app"
+# If using npm comment out above and use below instead
+# RUN npm run build
 
-USER 10500
+ENV NODE_ENV production
+# Uncomment the following line in case you want to disable telemetry during runtime.
+ENV NEXT_TELEMETRY_DISABLED 1
 
+USER 10014
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+ENV HOSTNAME 0.0.0.0
+ENV PORT 3000
+
+CMD ["./node_modules/.bin/next", "start"]
