@@ -18,6 +18,9 @@ const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 
 const Home = (props: any) => {
   const { data: session, status } = useSession();
+  const [readingList, setReadingList] = useState<Dictionary<Book[]> | null>(
+    null
+  );
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
   const router = useRouter(); // Use useRouter from "next/router" to access the router object.
 
@@ -27,7 +30,33 @@ const Home = (props: any) => {
 
   const accessToken = session?.user?.accessToken;
 
-  console.log("readingList", props.readingList);
+  async function getBooks() {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.ok) {
+      const grouped = groupBy(await response.json(), "status");
+      setReadingList(grouped);
+      router.push("/");
+    } else {
+      alert(`Something went wrong!"`);
+    }
+  }
+
+  useEffect(() => {
+    if (accessToken) {
+      try {
+        getBooks();
+      } catch (e) {
+        signOut({ callbackUrl: "/" });
+      }
+    }
+  }, [accessToken]);
+
+  // console.log("readingList", props.readingList);
 
   async function deleteBook(id: string): Promise<void> {
     await fetch(
@@ -79,10 +108,10 @@ const Home = (props: any) => {
                   </button>
                 </div>
               </nav>
-              {props.readingList !== null && (
+              {readingList && (
                 <Tab.Group>
                   <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
-                    {Object.keys(props.readingList).map((val) => (
+                    {Object.keys(readingList).map((val) => (
                       <Tab
                         key={val}
                         className={({ selected }) =>
@@ -100,36 +129,31 @@ const Home = (props: any) => {
                     ))}
                   </Tab.List>
                   <Tab.Panels className="mt-2">
-                    {(Object.values(props.readingList) as Book[][]).map(
-                      (books: Book[], idx: number) => (
-                        <Tab.Panel key={idx}>
-                          <ul>
-                            {books.map((book) => (
-                              <div
-                                className="flex justify-between"
-                                key={book.id}
+                    {Object.values(readingList).map((books: Book[], idx) => (
+                      <Tab.Panel key={idx}>
+                        <ul>
+                          {books.map((book) => (
+                            <div className="flex justify-between" key={book.id}>
+                              <li className="relative rounded-md p-3">
+                                <h3 className="text-sm font-medium leading-5">
+                                  {book.title}
+                                </h3>
+                                <h6 className="text-xs font-normal leading-4 text-gray-900">
+                                  <i> Written By: </i>
+                                  {book.author}
+                                </h6>
+                              </li>
+                              <button
+                                className="float-right bg-red-500 text-white rounded-md self-center text-xs p-2 mr-2"
+                                onClick={() => deleteBook(book.id || "")}
                               >
-                                <li className="relative rounded-md p-3">
-                                  <h3 className="text-sm font-medium leading-5">
-                                    {book.title}
-                                  </h3>
-
-                                  <ul className="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-200">
-                                    <i> Written By:</i><li>{book.author}</li>
-                                  </ul>
-                                </li>
-                                <button
-                                  className="float-right bg-red-500 text-white rounded-md self-center text-xs p-2 mr-2"
-                                  onClick={() => deleteBook(book.id || "")}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            ))}
-                          </ul>
-                        </Tab.Panel>
-                      )
-                    )}
+                                Delete
+                              </button>
+                            </div>
+                          ))}
+                        </ul>
+                      </Tab.Panel>
+                    ))}
                   </Tab.Panels>
                 </Tab.Group>
               )}
