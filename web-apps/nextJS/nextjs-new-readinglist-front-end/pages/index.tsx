@@ -16,7 +16,7 @@ export function classNames(...classes: string[]) {
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 
-const Home = (props: any) => {
+const Home = () => {
   const { data: session, status } = useSession();
   const [readingList, setReadingList] = useState<Dictionary<Book[]> | null>(
     null
@@ -171,24 +171,9 @@ const Home = (props: any) => {
 };
 
 export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
-  const accessToken = session?.user?.accessToken;
-  const response = await fetch(
-    `${
-      process.env.NEXT_PUBLIC_SERVICE_URL ||
-      publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL
-    }`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-  const grouped: Dictionary<Book[]> = groupBy(await response.json(), "status");
+
   return {
     props: {
-      readingList: grouped || null,
       session: await getSession(context),
     },
   };
