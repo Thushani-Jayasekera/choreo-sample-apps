@@ -1,18 +1,15 @@
 import NextAuth from "next-auth"
-import getConfig from "next/config"
-
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 
 export default NextAuth({
   providers: [
     {
       id: "asgardeo",
       name: "Asgardeo",
-      clientId: publicRuntimeConfig.ASGARDEO_CLIENT_ID,
-      clientSecret: publicRuntimeConfig.ASGARDEO_CLIENT_SECRET,
+      clientId: process.env.ASGARDEO_CLIENT_ID,
+      clientSecret: process.env.ASGARDEO_CLIENT_SECRET,
       type: "oauth",
-      wellKnown: "https://api.asgardeo.io/t/" + (publicRuntimeConfig.ASGARDEO_ORGANIZATION_NAME)+ "/oauth2/token/.well-known/openid-configuration",
-      authorization: { params: { scope: publicRuntimeConfig.ASGARDEO_SCOPES } },
+      wellKnown: "https://api.asgardeo.io/t/" + (process.env.ASGARDEO_ORGANIZATION_NAME)+ "/oauth2/token/.well-known/openid-configuration",
+      authorization: { params: { scope: process.env.ASGARDEO_SCOPES } },
       idToken: true,
       checks: ["pkce", "state"],
       profile(profile) {
@@ -24,7 +21,7 @@ export default NextAuth({
       },
     },
   ],
-  secret: serverRuntimeConfig.SECRET,
+  secret: process.env.SECRET,
 
   session: {
     strategy: "jwt",

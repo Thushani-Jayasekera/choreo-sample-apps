@@ -1,8 +1,5 @@
 import { GetServerSideProps } from "next";
 import { getSession, signIn, signOut } from "next-auth/react";
-import getConfig from "next/config";
-
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 
 const Header = (session: any, org: any) => (
   <header>
