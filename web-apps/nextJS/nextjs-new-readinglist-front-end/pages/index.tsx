@@ -1,5 +1,6 @@
 import { useSession, signOut, getSession } from "next-auth/react";
 import { Tab } from "@headlessui/react";
+import { HiArrowUp } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router"; // Import useRouter from "next/router" instead of importing "Router"
 import { Dictionary } from "lodash";
@@ -7,11 +8,13 @@ import groupBy from "lodash/groupBy";
 import { Book } from "@/types/book";
 import AddItem from "@/components/add-book";
 import Header from "@/components/header";
-
+import getConfig from "next/config";
 
 export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+const { publicRuntimeConfig } = getConfig();
 
 const Home = () => {
   const { data: session, status } = useSession();
@@ -53,11 +56,11 @@ const Home = () => {
     }
   }, [accessToken]);
 
-
   async function deleteBook(id: string): Promise<void> {
     await fetch(
       `${
-        process.env.NEXT_PUBLIC_SERVICE_URL
+        process.env.NEXT_PUBLIC_SERVICE_URL ||
+        publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL
       }?id=${id}`,
       {
         method: "DELETE",
@@ -166,7 +169,6 @@ const Home = () => {
 };
 
 export async function getServerSideProps(context: any) {
-
   return {
     props: {
       session: await getSession(context),
