@@ -29,13 +29,13 @@ export default NextAuth({
   callbacks: {
     async session({ session, token, user }) {
       session.user.accessToken = token.accessToken
-      session.user.idToken = token.idToken
+      // session.user.idToken = token.idToken
       return session
     },
     async jwt({ token, user, account, profile, isNewUser }) {
       if (account) {
         token.accessToken = account.access_token
-        token.idToken = account.id_token
+        // token.idToken = account.id_token
       }
       return token
     }
