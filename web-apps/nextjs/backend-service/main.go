@@ -12,8 +12,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
 	// WARNING!
 	// Change this to a fully-qualified import path
 	// once you place this file into your project.
@@ -21,20 +19,13 @@ import (
 	//
 	//    sw "github.com/myname/myrepo/go"
 	//
+	sw "todoserver/go"
 )
 
 func main() {
 	log.Printf("Server started")
 
-	router := mux.NewRouter()
+	router := sw.NewRouter()
 
-	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders: []string{"*"},
-	})
-
-	handler := corsHandler.Handler(router)
-
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
