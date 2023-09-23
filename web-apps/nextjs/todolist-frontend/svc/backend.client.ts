@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import getConfig from "next/config";
 
-const BASE_URL = process.env.TODO_API_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_TODO_API_BASE_URL;
 
 const {publicRuntimeConfig} = getConfig();
 
