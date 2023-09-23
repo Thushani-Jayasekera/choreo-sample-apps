@@ -1,6 +1,9 @@
 import axios, { AxiosResponse } from "axios";
+import getConfig from "next/config";
 
 const BASE_URL = process.env.TODO_API_BASE_URL;
+
+const {publicRuntimeConfig} = getConfig();
 
 export interface TodoResponse {
   id: number;
@@ -36,7 +39,7 @@ export const createTodoForUser = async (
 ): Promise<TodoResponse> => {
   try {
     const response: AxiosResponse<TodoResponse> = await axios.post(
-      `${process.env.NEXT_PUBLIC_TODO_API_BASE_URL}/users/${userId}/todos`,
+      `${publicRuntimeConfig.NEXT_PUBLIC_TODO_API_BASE_URL}/users/${userId}/todos`,
       todoData
     );
     return response.data;
