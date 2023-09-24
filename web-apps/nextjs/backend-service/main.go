@@ -20,6 +20,8 @@ import (
 	//    sw "github.com/myname/myrepo/go"
 	//
 	sw "todoserver/go"
+
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -27,5 +29,14 @@ func main() {
 
 	router := sw.NewRouter()
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders: []string{"*"},
+		Debug:          true,
+	})
+
+	handler := corsHandler.Handler(router)
+
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
