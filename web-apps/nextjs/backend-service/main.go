@@ -29,12 +29,7 @@ func main() {
 
 	router := sw.NewRouter()
 
-	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"},
-		AllowedHeaders: []string{"*"},
-		Debug:          true,
-	})
+	corsHandler := cors.AllowAll()
 
 	handler := corsHandler.Handler(router)
 
