@@ -4,6 +4,7 @@ import { Listbox } from "@headlessui/react";
 import { HiCheckCircle, HiChevronUpDown } from "react-icons/hi2";
 import Router from "next/router";
 import { getSession, useSession } from "next-auth/react";
+import getConfig from "next/config";
 
 export interface AddItemProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ const statuses = [
   { id: 3, name: "read" },
 ];
 
+const { publicRuntimeConfig } = getConfig();
+
 export default function AddItem(props: AddItemProps) {
   const { isOpen, setIsOpen } = props;
   const [name, setName] = useState("");
@@ -27,7 +30,7 @@ export default function AddItem(props: AddItemProps) {
   const handleOnSubmit = () => {
     async function setBooks() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL ||publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL}`, {
           method: "POST",
           body: JSON.stringify({
             title: name,
