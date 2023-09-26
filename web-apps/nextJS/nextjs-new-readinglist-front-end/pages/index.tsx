@@ -31,7 +31,7 @@ const Home = () => {
   const accessToken = session?.user?.accessToken;
 
   async function getBooks() {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVICE_URL || publicRuntimeConfig.NEXT_PUBLIC_SERVICE_URL}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
