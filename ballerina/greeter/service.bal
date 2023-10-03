@@ -31,4 +31,14 @@ service / on new http:Listener(9090) {
         }
         return "Hello, " + name;
     }
+    # A resource for liveness
+    resource function get healthz() returns boolean {
+        return true;
+    }
+
+    # A resource for readiness
+    resource function get readyz() returns boolean {
+        return true;
+    }
+
 }
